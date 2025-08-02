@@ -1,0 +1,226 @@
+// Flutter main entry
+import 'package:flutter/material.dart';
+import 'pages/home.dart';
+import 'pages/detection.dart';
+import 'pages/history.dart';
+import 'pages/settings.dart';
+import 'pages/falcon.dart';
+
+void main() => runApp(YOLOApp());
+
+class YOLOApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'YOLOv8 App',
+      theme: ThemeData.dark(),
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomePage(),
+        '/detection': (context) => DetectionPage(),
+        '/history': (context) => HistoryPage(),
+        '/settings': (context) => SettingsPage(),
+        '/falcon': (context) => FalconPage(),
+      },
+    );
+  }
+}
+
+// pages/home.dart
+import 'package:flutter/material.dart';
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Real-Time Detection')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.camera_alt, size: 100, color: Colors.greenAccent),
+            SizedBox(height: 20),
+            ElevatedButton(
+              child: Text('Start Detection'),
+              onPressed: () => Navigator.pushNamed(context, '/detection'),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// pages/detection.dart
+import 'package:flutter/material.dart';
+
+class DetectionPage extends StatelessWidget {
+  final List<Map<String, dynamic>> detections = [
+    {"label": "Toolbox", "confidence": 0.92},
+    {"label": "Oxygen Tank", "confidence": 0.87}
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Detection Results')),
+      body: ListView.builder(
+        itemCount: detections.length,
+        itemBuilder: (context, index) {
+          final item = detections[index];
+          return ListTile(
+            leading: Icon(Icons.check_circle, color: Colors.lightGreenAccent),
+            title: Text('${item["label"]}'),
+            subtitle: Text('Confidence: ${(item["confidence"] * 100).toStringAsFixed(1)}%'),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// pages/history.dart
+import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
+
+class HistoryPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Analytics & Logs')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text('Detections Over Time', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 200, child: LineChart(LineChartData())),
+            Divider(),
+            Expanded(
+              child: ListView(
+                children: [
+                  ListTile(
+                    title: Text('Toolbox Detected'),
+                    subtitle: Text('Confidence: 92%'),
+                    trailing: Text('12:31 PM'),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// pages/settings.dart
+import 'package:flutter/material.dart';
+
+class SettingsPage extends StatefulWidget {
+  @override
+  _SettingsPageState createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  String selectedModel = 'best.pt';
+  String selectedResolution = '480p';
+  TextEditingController endpointController = TextEditingController(text: 'http://localhost:5000/detect');
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Settings')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            DropdownButton<String>(
+              value: selectedModel,
+              items: ['best.pt', 'custom.pt'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              onChanged: (val) => setState(() => selectedModel = val!),
+            ),
+            Row(
+              children: ['480p', '720p', '1080p'].map((res) => Expanded(
+                child: RadioListTile(
+                  title: Text(res),
+                  value: res,
+                  groupValue: selectedResolution,
+                  onChanged: (val) => setState(() => selectedResolution = val!),
+                ),
+              )).toList(),
+            ),
+            TextField(
+              controller: endpointController,
+              decoration: InputDecoration(labelText: 'API Endpoint'),
+            ),
+            SizedBox(height: 16),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Save Settings'),
+                ),
+                SizedBox(width: 10),
+                OutlinedButton(
+                  onPressed: () => setState(() {
+                    selectedModel = 'best.pt';
+                    selectedResolution = '480p';
+                    endpointController.text = 'http://localhost:5000/detect';
+                  }),
+                  child: Text('Reset'),
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// pages/falcon.dart
+import 'package:flutter/material.dart';
+
+class FalconPage extends StatefulWidget {
+  @override
+  _FalconPageState createState() => _FalconPageState();
+}
+
+class _FalconPageState extends State<FalconPage> {
+  List<String> logs = [];
+
+  void simulateRetrain() {
+    setState(() {
+      logs.add('Retrain cycle started at ${DateTime.now().toLocal()}');
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Falcon AI Retraining')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text('Falcon Retraining Flow'),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: simulateRetrain,
+              child: Text('Simulate Retrain'),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: logs.length,
+                itemBuilder: (context, index) => ListTile(
+                  title: Text(logs[index]),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
