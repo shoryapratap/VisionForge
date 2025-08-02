@@ -25,7 +25,7 @@ Vision Forge leverages synthetic simulation data and real-time detection powered
 
 bash
 # Clone Repo
-git clone https://github.com/yourusername/vision-forge.git
+git clone https://github.com/shoryapratap/vision-forge.git
 cd DualityAI_Hackathon_Submission/1_Python_AI_Project/
 
 # (Optional) Set up Python env
