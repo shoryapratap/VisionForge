@@ -1,4 +1,5 @@
-// Flutter main entry
+// Backend Integration -> soon
+
 import 'package:flutter/material.dart';
 import 'pages/home.dart';
 import 'pages/detection.dart';
@@ -223,4 +224,5 @@ class _FalconPageState extends State<FalconPage> {
       ),
     );
   }
+
 }
